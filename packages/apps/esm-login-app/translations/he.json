@@ -1,14 +1,18 @@
 {
-  "back": "חזרה",
+  "2023AllRightsReserved": "2023 All Rights Reserved",
+  "cantLogin": "Can't Login?",
   "change": "שינוי",
   "confirm": "אישור",
-  "continue": "המשך",
+  "contactSupport": "Contact Support",
   "error": "שגיאה",
   "invalidCredentials": "שם משתמש או סיסמה לא תקינים",
   "loading": "טוען",
+  "location": "Location",
   "loggingIn": "Logging in",
   "login": "התחברות",
   "Logout": "התנתקות",
+  "METSProgram": "MakSPH- METS Program",
+  "MinistryOfHealth": "Ministry of Health - Republic of Uganda",
   "noResultsToDisplay": "No results to display",
   "password": "סיסמה",
   "poweredBy": "מופעל על ידי",
@@ -17,5 +21,6 @@
   "submitting": "Submitting",
   "username": "שם משתמש",
   "validValueRequired": "נדרשת ערך תקף",
+  "visitPortal": "Visit Portal",
   "welcome": "ברוכים הבאים"
 }

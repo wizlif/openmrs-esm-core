@@ -7,8 +7,11 @@ import {
   PasswordInput,
   TextInput,
   Tile,
+  ComboBox,
+  Grid,
+  Column,
 } from "@carbon/react";
-import { ArrowLeft, ArrowRight } from "@carbon/react/icons";
+import { EarthFilled, PhoneFilled } from "@carbon/react/icons";
 import { useTranslation } from "react-i18next";
 import {
   useConfig,
@@ -20,6 +23,7 @@ import {
   useConnectivity,
 } from "@openmrs/esm-framework";
 import { performLogin } from "../login.resource";
+import locationsTestData from "./locations";
 import styles from "./login.scss";
 
 const hidden: React.CSSProperties = {
@@ -46,6 +50,7 @@ const Login: React.FC<LoginProps> = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const usernameInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -67,31 +72,15 @@ const Login: React.FC<LoginProps> = () => {
   }, [username, navigate, location, user]);
 
   useEffect(() => {
-    const field = showPassword
-      ? passwordInputRef.current
-      : usernameInputRef.current;
-
-    if (field) {
-      field.focus();
-    }
-  }, [showPassword]);
-
-  useEffect(() => {
     if (!user && config.provider.type === "oauth2") {
       const loginUrl = config.provider.loginUrl;
       window.location.href = loginUrl;
     }
   }, [config, user]);
 
-  const continueLogin = useCallback(() => {
-    const field = usernameInputRef.current;
-
-    if (field.value.length > 0) {
-      navigate("/login/confirm", { state: location.state });
-    } else {
-      field.focus();
-    }
-  }, [location.state, navigate]);
+  const filterLocationNames = (name) => {
+    return name?.item?.toLowerCase().includes(name?.inputValue?.toLowerCase());
+  };
 
   const changeUsername = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => setUsername(evt.target.value),
@@ -112,11 +101,6 @@ const Login: React.FC<LoginProps> = () => {
     async (evt: React.FormEvent<HTMLFormElement>) => {
       evt.preventDefault();
       evt.stopPropagation();
-
-      if (!showPassword) {
-        continueLogin();
-        return false;
-      }
 
       try {
         setIsLoggingIn(true);
@@ -140,7 +124,6 @@ const Login: React.FC<LoginProps> = () => {
 
     [
       showPassword,
-      continueLogin,
       username,
       password,
       navigate,
@@ -148,6 +131,10 @@ const Login: React.FC<LoginProps> = () => {
       resetUserNameAndPassword,
     ]
   );
+
+  const handleLocationChange = (selectedItem) => {
+    setSelectedLocation(selectedItem);
+  };
 
   const logo = config.logo.src ? (
     <img
@@ -179,116 +166,149 @@ const Login: React.FC<LoginProps> = () => {
           />
         )}
         <Tile className={styles["login-card"]}>
-          {showPassword ? (
-            <div className={styles["back-button-div"]}>
-              <Button
-                className={styles["back-button"]}
-                iconDescription="Back to username"
-                kind="ghost"
-                onClick={() => navigate("/login")}
-                renderIcon={(props) => (
-                  <ArrowLeft
-                    size={24}
-                    style={{ marginRight: "0.5rem" }}
-                    {...props}
-                  />
-                )}
-              >
-                <span>{t("back", "Back")}</span>
-              </Button>
-            </div>
-          ) : null}
-          <div className={styles["center"]}>{logo}</div>
-          <form onSubmit={handleSubmit} ref={formRef}>
-            {!showPassword && (
-              <div className={styles["input-group"]}>
-                <TextInput
-                  id="username"
-                  type="text"
-                  name="username"
-                  labelText={t("username", "Username")}
-                  value={username}
-                  onChange={changeUsername}
-                  ref={usernameInputRef}
-                  autoFocus
-                  required
-                />
-                <input
-                  id="password"
-                  style={hidden}
-                  type="password"
-                  name="password"
-                  value={password}
-                  onChange={changePassword}
-                />
-                <Button
-                  className={styles.continueButton}
-                  renderIcon={(props) => <ArrowRight size={24} {...props} />}
-                  type="submit"
-                  iconDescription="Continue to login"
-                  onClick={continueLogin}
-                  disabled={!isLoginEnabled}
-                >
-                  {t("continue", "Continue")}
-                </Button>
-              </div>
-            )}
-            {showPassword && (
-              <div className={styles["input-group"]}>
-                <input
-                  id="username"
-                  type="text"
-                  name="username"
-                  style={hidden}
-                  value={username}
-                  onChange={changeUsername}
-                  required
-                />
-
-                <PasswordInput
-                  id="password"
-                  invalidText={t(
-                    "validValueRequired",
-                    "A valid value is required"
-                  )}
-                  labelText={t("password", "Password")}
-                  name="password"
-                  value={password}
-                  onChange={changePassword}
-                  ref={passwordInputRef}
-                  required
-                  showPasswordLabel="Show password"
-                />
-
-                <Button
-                  type="submit"
-                  className={styles.continueButton}
-                  renderIcon={(props) => <ArrowRight size={24} {...props} />}
-                  iconDescription="Log in"
-                  disabled={!isLoginEnabled || isLoggingIn}
-                >
-                  {isLoggingIn ? (
-                    <InlineLoading
-                      className={styles.loader}
-                      description={t("loggingIn", "Logging in") + "..."}
+          <Grid>
+            <Column sm={4} lg={8}>
+              <div>{logo}</div>
+            </Column>
+            <Column sm={4} lg={8}>
+              <form onSubmit={handleSubmit} ref={formRef}>
+                <div className={styles["input-group-custom"]}>
+                  <h4 className={styles["login-text"]}>Login</h4>
+                  <div className={styles["input-container"]}>
+                    <label
+                      htmlFor="username"
+                      className={styles["input-container-label"]}
+                    >
+                      {t("username", "Username")}
+                    </label>
+                    <TextInput
+                      id="username"
+                      type="text"
+                      name="username"
+                      value={username}
+                      onChange={changeUsername}
+                      ref={usernameInputRef}
+                      autoFocus
+                      required
                     />
-                  ) : (
-                    <span>{t("login", "Log in")}</span>
-                  )}
-                </Button>
-              </div>
-            )}
-          </form>
+                  </div>
+                  <div className={styles["input-container"]}>
+                    <label
+                      htmlFor="password"
+                      className={styles["input-container-label"]}
+                    >
+                      {t("password", "Password")}
+                    </label>
+                    <PasswordInput
+                      id="password"
+                      invalidText={t(
+                        "validValueRequired",
+                        "A valid value is required"
+                      )}
+                      name="password"
+                      value={password}
+                      onChange={changePassword}
+                      ref={passwordInputRef}
+                      required
+                      showPasswordLabel="Show password"
+                    />
+                  </div>
+
+                  <div className={styles["input-container"]}>
+                    <label
+                      htmlFor="location"
+                      className={styles["input-container-label-combo"]}
+                    >
+                      {t("location", "Location")}
+                    </label>
+                    <ComboBox
+                      ariaLabel="Location"
+                      id="resources-dropdown"
+                      items={
+                        locationsTestData
+                          ? locationsTestData.map(
+                              (entry) => entry.resource.name
+                            )
+                          : []
+                      }
+                      shouldFilterItem={filterLocationNames}
+                      onChange={handleLocationChange}
+                      style={{ width: "18rem" }}
+                      required
+                    />
+                  </div>
+                  <div className={styles["input-container"]}>
+                    <div className={styles["cant-login-text"]}>
+                      {t("cantLogin", "Can't Login?")}
+                    </div>
+                    <div>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className={styles.continueButton}
+                        disabled={!isLoginEnabled || isLoggingIn}
+                      >
+                        {isLoggingIn ? (
+                          <InlineLoading
+                            className={styles.loader}
+                            description={t("loggingIn", "Logging in") + "..."}
+                          />
+                        ) : (
+                          <div>
+                            <span>{t("login", "Log in")}</span>
+                          </div>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className={styles["login-card-footer"]}>
+                    <div className={styles["login-card-footer-content"]}>
+                      {" "}
+                      <EarthFilled
+                        className={styles["login-card-footer-icon"]}
+                      />{" "}
+                      {t("visitPortal", "Visit Portal")}{" "}
+                    </div>
+                    <div style={{ flex: "auto" }}>|</div>
+                    <div
+                      className={styles["login-card-footer-content"]}
+                      style={{ flex: "initial" }}
+                    >
+                      {" "}
+                      <PhoneFilled
+                        className={styles["login-card-footer-icon"]}
+                      />{" "}
+                      {t("contactSupport", "Contact Support")}
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </Column>
+          </Grid>
         </Tile>
         <div className={styles["footer"]}>
-          <p className={styles["powered-by-txt"]}>
-            {t("poweredBy", "Powered by")}
-          </p>
-          <div>
-            <svg role="img" className={styles["powered-by-logo"]}>
-              <use xlinkHref="#omrs-logo-partial-mono"></use>
-            </svg>
-          </div>
+          <Tile className={styles["powered-by-card"]}>
+            <div className={styles["powered-by-txt"]} style={{ flex: "auto" }}>
+              &copy;
+              {t("2023AllRightsReserved", "2023 All Rights Reserved")}
+              <span className={styles["text-color-red"]}>
+                {" "}
+                {t(
+                  "MinistryOfHealth",
+                  "Ministry of Health - Republic of Uganda"
+                )}
+              </span>
+            </div>
+            <div className={styles["powered-by-txt"]}>
+              {" "}
+              {t("poweredBy", "Powered by")}:{" "}
+              <span className={styles["text-color-red"]}>
+                {" "}
+                {t("METSProgram", "MakSPH- METS Program")}
+              </span>{" "}
+              | Ver 4.0.0
+            </div>
+          </Tile>
         </div>
       </div>
     );
