@@ -192,6 +192,8 @@
   // margin-top: 1.5rem;
   width: 18rem;
   border-radius: 10px;
+  justify-content: center;
+  font-weight: bold;
 }
 
 .back-button-div {
@@ -220,6 +222,7 @@
   position: fixed;
   width: 100%;
   text-align: -webkit-center;
+  text-align: -moz-center;
 }
 
 .loader {

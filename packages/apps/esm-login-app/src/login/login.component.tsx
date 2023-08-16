@@ -167,10 +167,10 @@ const Login: React.FC<LoginProps> = () => {
         )}
         <Tile className={styles["login-card"]}>
           <Grid>
-            <Column sm={4} lg={8}>
+            <Column sm={4} md={7} lg={8}>
               <div>{logo}</div>
             </Column>
-            <Column sm={4} lg={8}>
+            <Column sm={4} md={7} lg={8}>
               <form onSubmit={handleSubmit} ref={formRef}>
                 <div className={styles["input-group-custom"]}>
                   <h4 className={styles["login-text"]}>Login</h4>
@@ -185,6 +185,7 @@ const Login: React.FC<LoginProps> = () => {
                       id="username"
                       type="text"
                       name="username"
+                      className={styles["input-text-custom"]}
                       value={username}
                       onChange={changeUsername}
                       ref={usernameInputRef}
@@ -205,6 +206,7 @@ const Login: React.FC<LoginProps> = () => {
                         "validValueRequired",
                         "A valid value is required"
                       )}
+                      className={styles["input-text-custom"]}
                       name="password"
                       value={password}
                       onChange={changePassword}
@@ -234,6 +236,8 @@ const Login: React.FC<LoginProps> = () => {
                       shouldFilterItem={filterLocationNames}
                       onChange={handleLocationChange}
                       style={{ width: "18rem" }}
+                      placeholder="Select Location"
+                      className={styles["input-text-custom-combo"]}
                       required
                     />
                   </div>
@@ -244,7 +248,7 @@ const Login: React.FC<LoginProps> = () => {
                     <div>
                       <Button
                         type="submit"
-                        size="sm"
+                        size="md"
                         className={styles.continueButton}
                         disabled={!isLoginEnabled || isLoggingIn}
                       >
@@ -255,7 +259,7 @@ const Login: React.FC<LoginProps> = () => {
                           />
                         ) : (
                           <div>
-                            <span>{t("login", "Log in")}</span>
+                            <span>{t("login", "Login")}</span>
                           </div>
                         )}
                       </Button>
