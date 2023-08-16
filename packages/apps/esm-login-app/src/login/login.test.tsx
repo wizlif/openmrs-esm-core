@@ -49,7 +49,7 @@ describe("Login", () => {
     screen.getByRole("img", { name: /OpenMRS logo/i });
     expect(screen.queryByAltText(/logo/i)).not.toBeInTheDocument();
     screen.getByRole("textbox", { name: /Username/i });
-    screen.getByRole("button", { name: /Continue/i });
+    screen.getByRole("button", { name: /Login/i });
   });
 
   it("renders a configurable logo", () => {
@@ -86,14 +86,11 @@ describe("Login", () => {
       screen.getByRole("textbox", { name: /username/i })
     ).toBeInTheDocument();
     // no input to username
-    const continueButton = screen.getByRole("button", { name: /Continue/i });
-    await user.click(continueButton);
     expect(screen.getByRole("textbox", { name: /username/i })).toHaveFocus();
     await user.type(
       screen.getByRole("textbox", { name: /username/i }),
       "yoshi"
     );
-    await user.click(continueButton);
     await screen.findByLabelText(/password/i);
     await user.type(screen.getByLabelText(/password/i), "no-tax-fraud");
     expect(screen.getByLabelText(/password/i)).toHaveFocus();
@@ -117,11 +114,18 @@ describe("Login", () => {
       screen.getByRole("textbox", { name: /Username/i }),
       "yoshi"
     );
-    await user.click(screen.getByRole("button", { name: /Continue/i }));
 
-    const loginButton = screen.getByRole("button", { name: /log in/i });
+    const loginButton = screen.getByRole("button", { name: /login/i });
     await screen.findByLabelText(/password/i);
     await user.type(screen.getByLabelText(/password/i), "no-tax-fraud");
+
+    const locationDropdown = screen.getByPlaceholderText("Select Location");
+
+    await userEvent.click(locationDropdown);
+    await userEvent.type(locationDropdown, "site");
+    const options = await screen.findAllByRole("option");
+    await userEvent.click(options[0]);
+
     await user.click(loginButton);
     await waitFor(() =>
       expect(performLogin).toHaveBeenCalledWith("yoshi", "no-tax-fraud")
@@ -160,9 +164,8 @@ describe("Login", () => {
       screen.getByRole("textbox", { name: /Username/i }),
       "yoshi"
     );
-    await user.click(screen.getByRole("button", { name: /Continue/i }));
     await screen.findByLabelText(/password/i);
     await user.type(screen.getByLabelText(/password/i), "no-tax-fraud");
-    await user.click(screen.getByRole("button", { name: /log in/i }));
+    await user.click(screen.getByRole("button", { name: /login/i }));
   });
 });

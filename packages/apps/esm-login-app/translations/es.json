@@ -1,14 +1,18 @@
 {
-  "back": "Back",
+  "2023AllRightsReserved": "2023 All Rights Reserved",
+  "cantLogin": "Can't Login?",
   "change": "Change",
   "confirm": "confirmar",
-  "continue": "Seguir",
+  "contactSupport": "Contact Support",
   "error": "Error",
   "invalidCredentials": "Nombre de usuario o contraseña incorrecta",
   "loading": "Loading",
+  "location": "Location",
   "loggingIn": "Logging in",
   "login": "Iniciar sesión",
   "Logout": "Logout",
+  "METSProgram": "MakSPH- METS Program",
+  "MinistryOfHealth": "Ministry of Health - Republic of Uganda",
   "noResultsToDisplay": "No results to display",
   "password": "Contraseña",
   "poweredBy": "Powered by",
@@ -17,5 +21,6 @@
   "submitting": "Submitting",
   "username": "Nombre de usuario",
   "validValueRequired": "A valid value is required",
+  "visitPortal": "Visit Portal",
   "welcome": "Bienvenido"
 }

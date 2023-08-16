@@ -11,10 +11,55 @@
   text-align: center;
 }
 
+.login-text {
+  text-align: center;
+  font-weight: bolder;
+}
+
 .logo {
   margin-bottom: 2.5rem;
-  height: 5rem;
-  width: 16rem;
+  height: 13rem;
+  width: 20rem;
+}
+
+.login-card-footer {
+  margin-top: 1.5rem;
+  color: #525252;
+  font-weight: 500;
+  display: flex;
+}
+
+.login-card-footer-icon {
+  margin-right: 0.5rem;
+}
+
+.login-card-footer-content {
+  display: flex;
+  cursor: pointer;
+  flex: auto;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.cant-login-text {
+  // margin-top: 2rem;
+  color: $danger;
+  font-weight: bold;
+  flex: auto;
+}
+
+.input-container-label {
+  margin-right: 2rem;
+  font-weight: 800;
+}
+
+.input-container-label-combo {
+  margin-right: 2.5rem;
+  font-weight: 800;
 }
 
 .logo-img {
@@ -24,7 +69,7 @@
 
 .powered-by-txt {
   @extend .caption01;
-  text-align: center;
+  // text-align: center;
   color: $color-gray-70;
   color: $text-02;
 }
@@ -44,6 +89,10 @@
   margin: 1rem 0;
 }
 
+.text-color-red {
+  color: $danger;
+}
+
 .link {
   text-decoration-line: none;
   margin-left: 0.5rem;
@@ -58,12 +107,24 @@
   border-radius: 0;
   border: 1px solid $ui-03;
   background-color: $ui-02;
-  width: 23rem;
-  padding: 2.5rem;
+  max-width: 60rem;
+  padding-top: 2.5rem;
   position: relative;
-  min-height: 21.5rem;
+  min-height: 25rem;
+  border-radius: 20px;
 }
 
+.powered-by-card {
+  background-color: $ui-02;
+  width: 75%;
+  display: flex;
+  border-radius: 2rem;
+  min-height: 1rem;
+  font-weight: bold;
+  color: #525252;
+  text-align: justify;
+  padding: 0.2rem 1.2rem;
+}
 @media only screen and (min-width: 481px) {
   .container {
     height: 100vh;
@@ -74,6 +135,19 @@
   .login-card {
     margin-top: 2.5%;
     border: none;
+  }
+  .input-container {
+    display: block;
+  }
+  .powered-by-card {
+    width: auto;
+  }
+  .continueButton {
+    margin-top: 1.5rem;
+  }
+  .logo {
+    height: 5rem;
+    width: 16rem;
   }
 
   .container {
@@ -98,9 +172,28 @@
   }
 }
 
+.input-group-custom {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  // width: 18rem;
+
+  :global(.cds--text-input) {
+    height: 3rem;
+    @extend .label01;
+  }
+
+  :global(.cds--text-input__field-outer-wrapper) {
+    width: 18rem;
+  }
+}
+
 .continueButton {
-  margin-top: 1.5rem;
+  // margin-top: 1.5rem;
   width: 18rem;
+  border-radius: 10px;
+  justify-content: center;
+  font-weight: bold;
 }
 
 .back-button-div {
@@ -125,7 +218,11 @@
 }
 
 .footer {
-  margin-top: 6.75rem;
+  bottom: 1.5rem;
+  position: fixed;
+  width: 100%;
+  text-align: -webkit-center;
+  text-align: -moz-center;
 }
 
 .loader {
