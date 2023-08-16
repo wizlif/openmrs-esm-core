@@ -184,11 +184,13 @@ const Login: React.FC<LoginProps> = () => {
                     <TextInput
                       id="username"
                       type="text"
+                      labelText="username"
                       name="username"
                       className={styles["input-text-custom"]}
                       value={username}
                       onChange={changeUsername}
                       ref={usernameInputRef}
+                      hideLabel={true}
                       autoFocus
                       required
                     />
@@ -207,10 +209,12 @@ const Login: React.FC<LoginProps> = () => {
                         "A valid value is required"
                       )}
                       className={styles["input-text-custom"]}
+                      textLabel="password"
                       name="password"
                       value={password}
                       onChange={changePassword}
                       ref={passwordInputRef}
+                      hideLabel={true}
                       required
                       showPasswordLabel="Show password"
                     />
