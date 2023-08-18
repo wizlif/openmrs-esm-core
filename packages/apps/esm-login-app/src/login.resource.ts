@@ -5,29 +5,82 @@ import {
   FetchResponse,
   fhirBaseUrl,
   openmrsFetch,
-  refetchCurrentUser,
-  Session,
+  setSessionLocation,
   showNotification,
 } from "@openmrs/esm-framework";
-import { LocationEntry, LocationResponse } from "./types";
+import {
+  hasAttribute,
+  LocationEntry,
+  LocationResponse,
+  ProviderResponse,
+} from "./types";
+import { SessionResponse } from "./login/types";
+
+// Logout if default location is missing
+async function logoutIfNoCredentials(
+  sessionUrl: string,
+  abortController: AbortController
+) {
+  await openmrsFetch(sessionUrl, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    signal: abortController.signal,
+  });
+
+  throw new Error("Invalid Credentials");
+}
 
 export async function performLogin(
   username: string,
   password: string
-): Promise<{ data: Session }> {
+): Promise<void> {
   const abortController = new AbortController();
   const token = window.btoa(`${username}:${password}`);
-  const url = `/ws/rest/v1/session`;
+  const sessionUrl = `/ws/rest/v1/session`;
 
-  return openmrsFetch(url, {
-    headers: {
-      Authorization: `Basic ${token}`,
-    },
-    signal: abortController.signal,
-  }).then((res) => {
-    refetchCurrentUser();
-    return res;
-  });
+  const loginResponse: FetchResponse<SessionResponse> = await openmrsFetch(
+    sessionUrl,
+    {
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
+      signal: abortController.signal,
+    }
+  );
+
+  if (!loginResponse.data?.user?.uuid) {
+    throw new Error("Invalid Credentials");
+  }
+
+  // console.log(loginResponse);
+
+  const providerUrl = `/ws/rest/v1/provider?user=${loginResponse.data?.user?.uuid}&v=full`;
+
+  const providerResponse: FetchResponse<ProviderResponse> = await openmrsFetch(
+    providerUrl,
+    {
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
+      signal: abortController.signal,
+    }
+  );
+
+  if (!hasAttribute(providerResponse.data)) {
+    await logoutIfNoCredentials(sessionUrl, abortController);
+  }
+
+  const locationAttr = providerResponse.data.results[0].attributes.find(
+    (x) => x.attributeType?.display === "Default Location"
+  );
+
+  if (!locationAttr) {
+    await logoutIfNoCredentials(sessionUrl, abortController);
+  }
+
+  await setSessionLocation(locationAttr.uuid, new AbortController());
 }
 
 interface LoginLocationData {
@@ -47,6 +100,7 @@ export function useLoginLocations(
   searchQuery: string = ""
 ): LoginLocationData {
   const { t } = useTranslation();
+
   function constructUrl(page, prevPageData: FetchResponse<LocationResponse>) {
     if (
       prevPageData &&

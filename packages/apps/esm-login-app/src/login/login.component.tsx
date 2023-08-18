@@ -1,29 +1,28 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Button,
+  Column,
+  Grid,
   InlineLoading,
   InlineNotification,
   PasswordInput,
   TextInput,
   Tile,
-  ComboBox,
-  Grid,
-  Column,
 } from "@carbon/react";
 import { EarthFilled, PhoneFilled } from "@carbon/react/icons";
 import { useTranslation } from "react-i18next";
 import {
-  useConfig,
-  interpolateUrl,
-  useSession,
-  refetchCurrentUser,
   clearCurrentUser,
   getSessionStore,
+  interpolateUrl,
+  navigate,
+  refetchCurrentUser,
+  useConfig,
   useConnectivity,
+  useSession,
 } from "@openmrs/esm-framework";
 import { performLogin } from "../login.resource";
-import locationsTestData from "./locations";
 import styles from "./login.scss";
 
 const hidden: React.CSSProperties = {
@@ -45,7 +44,7 @@ const Login: React.FC<LoginProps> = () => {
   const { t } = useTranslation();
   const { user } = useSession();
   const location = useLocation();
-  const navigate = useNavigate();
+  const nav = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -63,13 +62,13 @@ const Login: React.FC<LoginProps> = () => {
         const authenticated =
           getSessionStore().getState().session.authenticated;
         if (authenticated) {
-          navigate("/login/location", { state: location.state });
+          nav("/home", { state: location.state });
         }
       });
     } else if (!username && location.pathname === "/login/confirm") {
-      navigate("/login", { state: location.state });
+      nav("/login", { state: location.state });
     }
-  }, [username, navigate, location, user]);
+  }, [username, nav, location, user]);
 
   useEffect(() => {
     if (!user && config.provider.type === "oauth2") {
@@ -104,19 +103,13 @@ const Login: React.FC<LoginProps> = () => {
 
       try {
         setIsLoggingIn(true);
-        const loginRes = await performLogin(username, password);
-        const authData = loginRes.data;
-        const valid = authData && authData.authenticated;
-
-        if (valid) {
-          navigate("/login/location", { state: location.state });
-        } else {
-          throw new Error("invalidCredentials");
-        }
+        await performLogin(username, password);
+        navigate({ to: config.links.loginSuccess });
       } catch (error) {
-        setIsLoggingIn(false);
         setErrorMessage(error.message);
         resetUserNameAndPassword();
+      } finally {
+        setIsLoggingIn(false);
       }
 
       return false;
@@ -126,7 +119,7 @@ const Login: React.FC<LoginProps> = () => {
       showPassword,
       username,
       password,
-      navigate,
+      nav,
       location.state,
       resetUserNameAndPassword,
     ]
@@ -220,31 +213,6 @@ const Login: React.FC<LoginProps> = () => {
                     />
                   </div>
 
-                  <div className={styles["input-container"]}>
-                    <label
-                      htmlFor="location"
-                      className={styles["input-container-label-combo"]}
-                    >
-                      {t("location", "Location")}
-                    </label>
-                    <ComboBox
-                      ariaLabel="Location"
-                      id="resources-dropdown"
-                      items={
-                        locationsTestData
-                          ? locationsTestData.map(
-                              (entry) => entry.resource.name
-                            )
-                          : []
-                      }
-                      shouldFilterItem={filterLocationNames}
-                      onChange={handleLocationChange}
-                      style={{ width: "18rem" }}
-                      placeholder="Select Location"
-                      className={styles["input-text-custom-combo"]}
-                      required
-                    />
-                  </div>
                   <div className={styles["input-container"]}>
                     <div className={styles["cant-login-text"]}>
                       {t("cantLogin", "Can't Login?")}

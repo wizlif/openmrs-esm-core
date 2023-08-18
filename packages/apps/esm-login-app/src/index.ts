@@ -23,10 +23,6 @@ export const root = getAsyncLifecycle(
   () => import("./root.component"),
   options
 );
-export const locationPicker = getAsyncLifecycle(
-  () => import("./location-picker/location-picker.component"),
-  options
-);
 export const logoutButton = getAsyncLifecycle(
   () => import("./logout/logout.component"),
   options

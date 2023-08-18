@@ -19,13 +19,6 @@
   ],
   "extensions": [
     {
-      "name": "location-picker",
-      "slot": "location-picker",
-      "component": "locationPicker",
-      "online": true,
-      "offline": true
-    },
-    {
       "name": "logout-button",
       "slot": "user-panel-actions-slot",
       "component": "logoutButton",

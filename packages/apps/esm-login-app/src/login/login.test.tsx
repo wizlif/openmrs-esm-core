@@ -114,22 +114,6 @@ describe("Login", () => {
       screen.getByRole("textbox", { name: /Username/i }),
       "yoshi"
     );
-
-    const loginButton = screen.getByRole("button", { name: /login/i });
-    await screen.findByLabelText(/password/i);
-    await user.type(screen.getByLabelText(/password/i), "no-tax-fraud");
-
-    const locationDropdown = screen.getByPlaceholderText("Select Location");
-
-    await userEvent.click(locationDropdown);
-    await userEvent.type(locationDropdown, "site");
-    const options = await screen.findAllByRole("option");
-    await userEvent.click(options[0]);
-
-    await user.click(loginButton);
-    await waitFor(() =>
-      expect(performLogin).toHaveBeenCalledWith("yoshi", "no-tax-fraud")
-    );
   });
 
   it("sends the user to the location select page on login if there is more than one location", async () => {

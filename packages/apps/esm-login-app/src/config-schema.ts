@@ -25,7 +25,7 @@ export const configSchema = {
   chooseLocation: {
     enabled: {
       _type: Type.Boolean,
-      _default: true,
+      _default: false,
       _description:
         "Whether to show a 'Choose Location' screen after login. " +
         "If true, the user will be taken to the loginSuccess URL after they " +
